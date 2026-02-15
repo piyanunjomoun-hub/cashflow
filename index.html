@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCash | แดชบอร์ดรายรับ-รายจ่าย</title>
+    <meta name="description" content="จัดการการเงินของคุณด้วย DCash - แดชบอร์ดรายรับรายจ่ายที่สวยงามและใช้งานง่าย">
+
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Flatpickr (Calendar Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-main">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i data-lucide="layout-dashboard"></i>
+                </div>
+                <span>DCash</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" id="menuOverview">
+                    <i data-lucide="pie-chart"></i>
+                    <span>ภาพรวม</span>
+                </a>
+                <a href="#" class="nav-item" id="menuTransactions">
+                    <i data-lucide="list"></i>
+                    <span>รายการทั้งหมด</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User">
+                    <div class="user-info">
+                        <p class="user-name">ผู้ใช้งาน</p>
+                        <p class="user-status">บัญชีพื้นฐาน</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard View -->
+        <main class="main-content" id="viewOverview">
+            <header class="top-bar">
+                <h2 class="view-title">ภาพรวม</h2>
+                <div class="top-bar-actions">
+                    <button class="btn-icon">
+                        <i data-lucide="bell"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="goal-section">
+                <div class="goal-card">
+                    <div class="goal-info">
+                        <p class="goal-label">เป้าหมายรายรับรายเดือน</p>
+                        <h1 class="goal-value"><span id="goalTarget">฿50,000</span> / <small id="goalCurrent">฿0</small>
+                        </h1>
+                    </div>
+                    <div class="goal-progress-container">
+                        <div class="goal-progress-bar" id="goalProgressBar" style="width: 0%"></div>
+                    </div>
+                    <p class="goal-status" id="goalStatusText">กำลังดำเนินการ (0%)</p>
+                </div>
+            </div>
+
+            <section class="dashboard-grid">
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card balance-card">
+                        <div class="card-header">
+                            <span class="card-label">เงินเก็บ</span>
+                            <div class="card-icon balance">
+                                <i data-lucide="piggy-bank"></i>
+                            </div>
+                        </div>
+                        <h2 class="card-value" id="totalBalance">฿0.00</h2>
+                        <div class="card-footer">
+                            <span class="trend up"><i data-lucide="trending-up"></i> +0%</span>
+                            <span class="footer-label">จากเดือนที่แล้ว</span>
+                        </div>
+                    </div>
+
+                    <div class="card income-card">
+                        <div class="card-header">
+                            <span class="card-label">รายรับเดือนนี้</span>
+                            <div class="card-icon income">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                        </div>
+                        <h2 class="card-value text-success" id="monthlyIncome">฿0.00</h2>
+                        <div class="card-footer">
+                            <span class="trend up"><i data-lucide="trending-up"></i> +0%</span>
+                        </div>
+                    </div>
+
+                    <div class="card expense-card">
+                        <div class="card-header">
+                            <span class="card-label">รายจ่ายเดือนนี้</span>
+                            <div class="card-icon expense">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                        </div>
+                        <h2 class="card-value text-danger" id="monthlyExpense">฿0.00</h2>
+                        <div class="card-footer">
+                            <span class="trend down"><i data-lucide="trending-down"></i> -0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-container">
+                    <div class="card chart-card main-chart">
+                        <div class="card-header">
+                            <h3 class="card-title">แนวโน้มการเงิน</h3>
+                            <div class="chart-actions">
+                                <select class="chart-select">
+                                    <option>6 เดือนล่าสุด</option>
+                                    <option>ปีนี้</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card category-chart">
+                        <div class="card-header">
+                            <h3 class="card-title">เปรียบเทียบการเงิน</h3>
+                            <div class="chart-actions">
+                                <select id="filterChartMonth" class="chart-select">
+                                    <option value="all">ทั้งหมด</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions (Brief) -->
+                <div class="card transactions-card">
+                    <div class="card-header">
+                        <h3 class="card-title">รายการล่าสุด</h3>
+                        <button class="btn-link" id="viewAllLink">ดูทั้งหมด</button>
+                    </div>
+                    <div class="transactions-list" id="transactionsListShort">
+                        <!-- Brief transactions will be loaded here -->
+                        <div class="empty-state">
+                            <p>ไม่มีรายการในขณะนี้</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inline Transaction Form -->
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h3 class="card-title">เพิ่มรายการใหม่</h3>
+                    </div>
+                    <form id="transactionForm" class="transaction-form-inline">
+                        <div class="form-row-dynamic">
+                            <div class="form-group">
+                                <label>ประเภท</label>
+                                <div class="type-selector">
+                                    <input type="radio" name="type" id="typeIncome" value="income" checked>
+                                    <label for="typeIncome" class="type-btn">รายรับ</label>
+                                    <input type="radio" name="type" id="typeExpense" value="expense">
+                                    <label for="typeExpense" class="type-btn">รายจ่าย</label>
+                                    <input type="radio" name="type" id="typeSaving" value="saving">
+                                    <label for="typeSaving" class="type-btn">เงินเก็บ</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">ชื่อรายการ</label>
+                                <input type="text" id="description" required placeholder="เช่น เงินเดือน, ค่าอาหาร">
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">จำนวนเงิน (บาท)</label>
+                                <input type="number" id="amount" required min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="date">วันที่ (วว/ดด/ปปปป)</label>
+                                <div class="date-input-wrapper">
+                                    <input type="text" id="date" required placeholder="15/02/2026" maxlength="10">
+                                    <i data-lucide="calendar" class="calendar-icon" id="calendarTrigger"></i>
+                                </div>
+                            </div>
+                            <div class="form-group align-end">
+                                <button type="submit" class="btn-submit">เพิ่มรายการ</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- Full Transactions View (Hidden by default) -->
+        <main class="main-content" id="viewAllTransactions" style="display: none;">
+            <header class="top-bar">
+                <h2 class="view-title">รายการธุรกรรมทั้งหมด</h2>
+                <div class="filter-controls">
+                    <select id="filterMonth" class="chart-select">
+                        <option value="all">ทุกเดือน</option>
+                    </select>
+                    <select id="filterType" class="chart-select">
+                        <option value="all">ทั้งหมด</option>
+                        <option value="income">เฉพาะรายรับ</option>
+                        <option value="expense">เฉพาะรายจ่าย</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="card full-list-card">
+                <div class="transactions-list-full" id="transactionsListFull">
+                    <!-- 30 transactions per page will be loaded here -->
+                </div>
+
+                <div class="pagination-container">
+                    <button class="btn-icon" id="prevPage"><i data-lucide="chevron-left"></i></button>
+                    <span id="pageInfo">หน้า 1 จาก 1</span>
+                    <button class="btn-icon" id="nextPage"><i data-lucide="chevron-right"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <nav class="mobile-nav">
+        <a href="#" class="mobile-nav-item active" id="mobileMenuOverview">
+            <i data-lucide="layout-grid"></i>
+            <span>ภาพรวม</span>
+        </a>
+        <a href="#" class="mobile-nav-item" id="mobileMenuTransactions">
+            <i data-lucide="list"></i>
+            <span>รายการ</span>
+        </a>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

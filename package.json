@@ -1,0 +1,11 @@
+{
+  "name": "finance-flow",
+  "version": "1.0.0",
+  "description": "Finance dashboard built with Vanilla HTML/JS",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

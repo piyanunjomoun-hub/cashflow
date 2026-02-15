@@ -19,6 +19,7 @@ const db = firebase.database();
 const transactionsRef = db.ref('transactions');
 
 // Connection Debugging
+console.log("🚀 DCash Version: 1.1 - Singapore Database Fix");
 db.ref(".info/connected").on("value", (snap) => {
     if (snap.val() === true) {
         console.log("🔥 Firebase: Connected successfully!");
@@ -250,28 +251,69 @@ function renderShortTransactions() {
 }
 
 function renderFullTransactions() {
+    const summaryContainer = document.getElementById('summaryGroupedContainer');
+    const summaryList = document.getElementById('summaryGroupedList');
     transactionsListFullEl.innerHTML = '';
+    summaryList.innerHTML = '';
 
-    // Apply filters
-    // Sort by date descending, then by ID descending (newest on top)
-    let filtered = [...transactions].sort((a, b) => {
-        const dateDiff = new Date(b.date) - new Date(a.date);
-        return dateDiff !== 0 ? dateDiff : b.id - a.id;
-    });
+    // 1. Initial filtered list from all transactions
+    let filtered = [...transactions];
 
-    // Filter by type
+    // 2. Apply Type Filter
     if (currentFilter !== 'all') {
         filtered = filtered.filter(tx => tx.type === currentFilter);
     }
 
-    // Filter by month
+    // 3. Apply Month Filter
     if (currentMonthFilter !== 'all') {
         filtered = filtered.filter(tx => {
             const date = new Date(tx.date);
             const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
             return monthStr === currentMonthFilter;
         });
+
+        // 4. Generate Grouped Summary (Only if a specific month is selected)
+        const grouped = filtered.reduce((acc, tx) => {
+            const key = `${tx.type}_${tx.description.trim()}`;
+            if (!acc[key]) {
+                acc[key] = {
+                    description: tx.description.trim(),
+                    type: tx.type,
+                    amount: 0
+                };
+            }
+            acc[key].amount += tx.amount;
+            return acc;
+        }, {});
+
+        const groupedEntries = Object.values(grouped);
+        if (groupedEntries.length > 0) {
+            summaryContainer.style.display = 'block';
+            groupedEntries.forEach(group => {
+                const amountClass = group.type === 'income' ? 'text-success' : group.type === 'expense' ? 'text-danger' : 'text-main';
+                const prefix = group.type === 'income' ? '+' : group.type === 'expense' ? '-' : '•';
+                const item = document.createElement('div');
+                item.className = 'grouped-item';
+                item.innerHTML = `
+                    <span class="grouped-topic">${group.description}</span>
+                    <span class="grouped-amount ${amountClass}">${prefix} ฿${group.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                `;
+                summaryList.appendChild(item);
+            });
+        } else {
+            summaryContainer.style.display = 'none';
+        }
+    } else {
+        summaryContainer.style.display = 'none';
     }
+
+    // 5. Sort for the detailed list
+    filtered.sort((a, b) => {
+        const dateDiff = new Date(b.date) - new Date(a.date);
+        return dateDiff !== 0 ? dateDiff : b.id - a.id;
+    });
+
+    // 6. Pagination & Rendering the Raw List
 
     // Pagination
     const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
@@ -493,6 +535,14 @@ function switchView(viewName) {
         menuTransactions.classList.add('active');
         if (mobileMenuOverview) mobileMenuOverview.classList.remove('active');
         if (mobileMenuTransactions) mobileMenuTransactions.classList.add('active');
+
+        // Reset to current month by default if no filter is set
+        if (currentMonthFilter === 'all') {
+            const now = new Date();
+            currentMonthFilter = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            document.getElementById('filterMonth').value = currentMonthFilter;
+        }
+
         renderFullTransactions();
     }
 }

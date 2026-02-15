@@ -10,7 +10,7 @@ const firebaseConfig = {
     messagingSenderId: "669328008811",
     appId: "1:669328008811:web:25e122b977790c40f9732e",
     measurementId: "G-TZB9YLC6GL",
-    databaseURL: "https://dcash-database-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    databaseURL: "https://dcash-database-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 // Initialize Firebase

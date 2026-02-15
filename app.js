@@ -1,9 +1,24 @@
 // Initialize Lucide icons
 lucide.createIcons();
 
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAZlJRp16G8ASoN-D3DhEBCqKzi0VlSLPU",
+    authDomain: "dcash-database.firebaseapp.com",
+    projectId: "dcash-database",
+    storageBucket: "dcash-database.firebasestorage.app",
+    messagingSenderId: "669328008811",
+    appId: "1:669328008811:web:25e122b977790c40f9732e",
+    measurementId: "G-TZB9YLC6GL"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const transactionsRef = db.ref('transactions');
+
 // Data State
-// Resetting transitions to empty array as requested by user
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let transactions = [];
 
 // Categories Config
 const categories = {
@@ -47,7 +62,17 @@ let currentChartMonthFilter = 'all';
 let mainChart, categoryChart;
 
 function init() {
-    updateDashboard();
+    // Listen for data from Firebase
+    transactionsRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        transactions = data ? Object.values(data) : [];
+
+        // Refresh everything when data arrives or changes
+        updateDashboard();
+        updateCharts();
+        renderFullTransactions();
+    });
+
     initCharts();
     setupEventListeners();
 
@@ -60,8 +85,7 @@ function init() {
 }
 
 function updateDashboard() {
-    // Save to localStorage
-    localStorage.setItem('transactions', JSON.stringify(transactions));
+    // Summary calculation (unchanged logic)
 
     // Calculate Summary
     const now = new Date();
@@ -541,8 +565,8 @@ function setupEventListeners() {
             date: `${y}-${m}-${d}`
         };
 
-        transactions.push(newTransaction);
-        updateDashboard();
+        // Push to Firebase instead of local array
+        transactionsRef.push(newTransaction);
 
         if (GOOGLE_SHEET_URL) {
             fetch(GOOGLE_SHEET_URL, {

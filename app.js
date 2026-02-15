@@ -65,7 +65,14 @@ function init() {
     // Listen for data from Firebase
     transactionsRef.on('value', (snapshot) => {
         const data = snapshot.val();
-        transactions = data ? Object.values(data) : [];
+        transactions = [];
+        if (data) {
+            Object.keys(data).forEach(key => {
+                const tx = data[key];
+                tx.firebaseKey = key;
+                transactions.push(tx);
+            });
+        }
 
         // Refresh everything when data arrives or changes
         updateDashboard();
@@ -85,7 +92,6 @@ function init() {
 }
 
 function updateDashboard() {
-    // Summary calculation (unchanged logic)
 
     // Calculate Summary
     const now = new Date();
@@ -314,9 +320,15 @@ function createTransactionElement(tx) {
 }
 
 function deleteTransaction(id) {
+    // Find the transaction to get its unique Firebase key
+    const txToDelete = transactions.find(t => t.id === id);
+    if (!txToDelete || !txToDelete.firebaseKey) return;
+
     if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
-        transactions = transactions.filter(tx => tx.id !== id);
-        updateDashboard();
+        // Remove from Firebase directly - the 'on value' listener will update the UI
+        transactionsRef.child(txToDelete.firebaseKey).remove()
+            .then(() => console.log('Deleted from Firebase'))
+            .catch(err => console.error('Delete failed:', err));
     }
 }
 

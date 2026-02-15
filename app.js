@@ -9,13 +9,23 @@ const firebaseConfig = {
     storageBucket: "dcash-database.firebasestorage.app",
     messagingSenderId: "669328008811",
     appId: "1:669328008811:web:25e122b977790c40f9732e",
-    measurementId: "G-TZB9YLC6GL"
+    measurementId: "G-TZB9YLC6GL",
+    databaseURL: "https://dcash-database-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const transactionsRef = db.ref('transactions');
+
+// Connection Debugging
+db.ref(".info/connected").on("value", (snap) => {
+    if (snap.val() === true) {
+        console.log("🔥 Firebase: Connected successfully!");
+    } else {
+        console.log("⚠️ Firebase: Disconnected.");
+    }
+});
 
 // Data State
 let transactions = [];

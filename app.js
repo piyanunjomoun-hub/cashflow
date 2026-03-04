@@ -58,11 +58,15 @@ const transactionForm = document.getElementById('transactionForm');
 // Navigation Elements
 const menuOverview = document.getElementById('menuOverview');
 const menuTransactions = document.getElementById('menuTransactions');
-const mobileMenuOverview = document.getElementById('mobileMenuOverview');
-const mobileMenuTransactions = document.getElementById('mobileMenuTransactions');
 const viewOverview = document.getElementById('viewOverview');
 const viewAllTransactions = document.getElementById('viewAllTransactions');
 const viewAllLink = document.getElementById('viewAllLink');
+
+// Sidebar Elements
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const mobileMenuToggleOverview = document.getElementById('mobileMenuToggleOverview');
+const mobileMenuToggleTransactions = document.getElementById('mobileMenuToggleTransactions');
 
 // Filter & Pagination State
 let currentPage = 1;
@@ -527,20 +531,19 @@ function updateCharts() {
 }
 
 function switchView(viewName) {
+    if (sidebar) sidebar.classList.remove('show');
+    if (sidebarOverlay) sidebarOverlay.classList.remove('show');
+
     if (viewName === 'overview') {
         viewOverview.style.display = 'block';
         viewAllTransactions.style.display = 'none';
         menuOverview.classList.add('active');
         menuTransactions.classList.remove('active');
-        if (mobileMenuOverview) mobileMenuOverview.classList.add('active');
-        if (mobileMenuTransactions) mobileMenuTransactions.classList.remove('active');
     } else {
         viewOverview.style.display = 'none';
         viewAllTransactions.style.display = 'block';
         menuOverview.classList.remove('active');
         menuTransactions.classList.add('active');
-        if (mobileMenuOverview) mobileMenuOverview.classList.remove('active');
-        if (mobileMenuTransactions) mobileMenuTransactions.classList.add('active');
 
         // Reset to current month by default if no filter is set
         if (currentMonthFilter === 'all') {
@@ -562,9 +565,15 @@ function setupEventListeners() {
     menuTransactions.addEventListener('click', () => switchView('transactions'));
     viewAllLink.addEventListener('click', () => switchView('transactions'));
 
-    // Mobile Navigation
-    if (mobileMenuOverview) mobileMenuOverview.addEventListener('click', (e) => { e.preventDefault(); switchView('overview'); });
-    if (mobileMenuTransactions) mobileMenuTransactions.addEventListener('click', (e) => { e.preventDefault(); switchView('transactions'); });
+    // Sidebar Toggles
+    const toggleSidebar = () => {
+        if (sidebar) sidebar.classList.toggle('show');
+        if (sidebarOverlay) sidebarOverlay.classList.toggle('show');
+    };
+
+    if (mobileMenuToggleOverview) mobileMenuToggleOverview.addEventListener('click', toggleSidebar);
+    if (mobileMenuToggleTransactions) mobileMenuToggleTransactions.addEventListener('click', toggleSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
     // Filters
     document.getElementById('filterType').addEventListener('change', (e) => {

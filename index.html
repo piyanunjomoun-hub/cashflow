@@ -30,7 +30,8 @@
 <body class="bg-main">
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <div class="logo-icon">
                     <i data-lucide="layout-dashboard"></i>
@@ -63,7 +64,12 @@
         <!-- Main Dashboard View -->
         <main class="main-content" id="viewOverview">
             <header class="top-bar">
-                <h2 class="view-title">ภาพรวม</h2>
+                <div class="top-bar-title-wrap">
+                    <button class="btn-icon mobile-menu-toggle" id="mobileMenuToggleOverview">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h2 class="view-title">ภาพรวม</h2>
+                </div>
                 <div class="top-bar-actions">
                     <button class="btn-icon">
                         <i data-lucide="bell"></i>
@@ -231,7 +237,12 @@
         <!-- Full Transactions View (Hidden by default) -->
         <main class="main-content" id="viewAllTransactions" style="display: none;">
             <header class="top-bar">
-                <h2 class="view-title">รายการธุรกรรมทั้งหมด</h2>
+                <div class="top-bar-title-wrap">
+                    <button class="btn-icon mobile-menu-toggle" id="mobileMenuToggleTransactions">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h2 class="view-title">รายการธุรกรรมทั้งหมด</h2>
+                </div>
                 <div class="filter-controls">
                     <select id="filterMonth" class="chart-select">
                         <option value="all">ทุกเดือน</option>
@@ -267,17 +278,6 @@
             </div>
         </main>
     </div>
-
-    <nav class="mobile-nav">
-        <a href="#" class="mobile-nav-item active" id="mobileMenuOverview">
-            <i data-lucide="layout-grid"></i>
-            <span>ภาพรวม</span>
-        </a>
-        <a href="#" class="mobile-nav-item" id="mobileMenuTransactions">
-            <i data-lucide="list"></i>
-            <span>รายการ</span>
-        </a>
-    </nav>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>

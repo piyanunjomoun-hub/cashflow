@@ -898,10 +898,6 @@ body {
     .form-row-dynamic {
         grid-template-columns: 1fr 1fr;
     }
-
-    .form-row-dynamic .form-group:nth-child(2) {
-        grid-column: span 2;
-    }
 }
 
 @media (max-width: 480px) {
@@ -940,10 +936,6 @@ body {
 
     .form-row-dynamic {
         grid-template-columns: 1fr;
-    }
-
-    .form-row-dynamic .form-group:nth-child(2) {
-        grid-column: span 1;
     }
 
     .btn-primary {

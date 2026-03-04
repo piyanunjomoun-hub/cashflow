@@ -193,7 +193,18 @@
                                     <label for="typeSaving" class="type-btn">เงินเก็บ</label>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="categoryGroup" style="display: none;">
+                                <label>หมวดหมู่รายจ่าย</label>
+                                <div class="category-selector">
+                                    <input type="radio" name="expenseCategory" id="catTransport" value="ค่ารถ" checked>
+                                    <label for="catTransport" class="cat-btn">ค่ารถ</label>
+                                    <input type="radio" name="expenseCategory" id="catFood" value="ค่าข้าว">
+                                    <label for="catFood" class="cat-btn">ค่าข้าว</label>
+                                    <input type="radio" name="expenseCategory" id="catOther" value="อื่นๆ">
+                                    <label for="catOther" class="cat-btn">อื่นๆ</label>
+                                </div>
+                            </div>
+                            <div class="form-group" id="descriptionGroup">
                                 <label for="description">ชื่อรายการ</label>
                                 <input type="text" id="description" required placeholder="เช่น เงินเดือน, ค่าอาหาร">
                             </div>

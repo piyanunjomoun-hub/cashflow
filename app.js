@@ -1,3 +1,5 @@
+/* global lucide, firebase, Chart, flatpickr */
+
 // Initialize Lucide icons
 lucide.createIcons();
 
@@ -274,10 +276,14 @@ function renderFullTransactions() {
 
         // 4. Generate Grouped Summary (Only if a specific month is selected)
         const grouped = filtered.reduce((acc, tx) => {
-            const key = `${tx.type}_${tx.description.trim()}`;
+            let key, description;
+
+            description = tx.description.trim();
+            key = `${tx.type}_${description}`;
+
             if (!acc[key]) {
                 acc[key] = {
-                    description: tx.description.trim(),
+                    description: description,
                     type: tx.type,
                     amount: 0
                 };
@@ -618,6 +624,48 @@ function setupEventListeners() {
         e.target.value = value;
     });
 
+    transactionForm.type.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const categoryGroup = document.getElementById('categoryGroup');
+            const descriptionGroup = document.getElementById('descriptionGroup');
+            const descInput = document.getElementById('description');
+
+            if (e.target.value === 'expense') {
+                categoryGroup.style.display = 'flex';
+                // Trigger category logic
+                updateDescriptionVisibility();
+            } else {
+                categoryGroup.style.display = 'none';
+                descriptionGroup.style.display = 'flex';
+                descInput.required = true;
+            }
+        });
+    });
+
+    function updateDescriptionVisibility() {
+        const categoryGroup = document.getElementById('categoryGroup');
+        const descriptionGroup = document.getElementById('descriptionGroup');
+        const descInput = document.getElementById('description');
+        const selectedCat = transactionForm.expenseCategory.value;
+
+        if (transactionForm.type.value === 'expense') {
+            if (selectedCat === 'อื่นๆ') {
+                descriptionGroup.style.display = 'flex';
+                descInput.required = true;
+                descInput.placeholder = "ระบุค่าใช้จ่ายอื่นๆ";
+                descInput.value = "";
+            } else {
+                descriptionGroup.style.display = 'none';
+                descInput.required = false;
+                descInput.value = selectedCat;
+            }
+        }
+    }
+
+    transactionForm.expenseCategory.forEach(radio => {
+        radio.addEventListener('change', updateDescriptionVisibility);
+    });
+
     transactionForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const dateStr = document.getElementById('date').value;
@@ -628,10 +676,20 @@ function setupEventListeners() {
             return;
         }
 
+        const type = transactionForm.type.value;
+        let description = document.getElementById('description').value;
+
+        if (type === 'expense') {
+            const cat = transactionForm.expenseCategory.value;
+            if (cat !== 'อื่นๆ') {
+                description = cat;
+            }
+        }
+
         const newTransaction = {
             id: Date.now(),
-            type: transactionForm.type.value,
-            description: document.getElementById('description').value,
+            type: type,
+            description: description,
             amount: parseFloat(document.getElementById('amount').value),
             category: 'other', // Default to other since input is removed
             date: `${y}-${m}-${d}`
@@ -650,6 +708,12 @@ function setupEventListeners() {
         }
 
         transactionForm.reset();
+
+        // Reset dynamic fields
+        document.getElementById('categoryGroup').style.display = 'none';
+        document.getElementById('descriptionGroup').style.display = 'flex';
+        document.getElementById('description').placeholder = "เช่น เงินเดือน, ค่าอาหาร";
+
         const today = new Date();
         document.getElementById('date').value = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
     });
